@@ -46,7 +46,7 @@ sub get_all_af {
                 $dbh = DBI->connect("dbi:SQLite:dbname=$db_file","","");
                 $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM dbpp WHERE key37 = '$chr:$pos:$ref:$allele'");
                 map{
-                    $db_query_result = "@$_";
+                    $db_query_result = "@$_"; # double quotation marks is necessary
                 } @$db_ary_ref;
                 $dbh->disconnect();
         }
