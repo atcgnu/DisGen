@@ -1,2 +1,2 @@
 # DisGen
-A Perl Modue for Disease Genomes Research
+A Perl Module for Disease Genomes Research
