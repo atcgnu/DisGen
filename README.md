@@ -1,2 +1,2 @@
-# rdclinic
-rdclinic, a web application for `rare disease`
+# DisGen
+A Perl Modue for Disease Genomes Research
