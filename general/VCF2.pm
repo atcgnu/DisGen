@@ -5,59 +5,38 @@ use DisGen::general::MakeOpen;
 use DisGen::general::AlleleFrequency;
 use DisGen::general::GenotypeCount;
 
-sub vcf2candidate {
-	my ($sig_chr, $out_dir, $out_file, $ref_configs) = @_;
-	my %configs = %$ref_configs;
-	my %db_filters = ('KG' => 1, 'ESP' => 1,'PVFD' => 1, 'IN-HOUSE-1' => 1,'IN-HOUSE-2' => 1, 'IN-HOUSE-3' => 1,'CG' => 1, 'HapMap' => 1,'Wellderly' => 1, 'ExAC' => 1);
-	my @af_dbs = ('KG', 'ESP','PVFD', 'IN-HOUSE-1','IN-HOUSE-2', 'IN-HOUSE-3','CG', 'HapMap','Wellderly', 'ExAC');
-
-	map{
-    	my ($af_df, $db_af_threshold) = ($1, $2) if /\s?(\w+)\s?<=\s?(\S+)\s?/;
-	    $db_filters{$af_df} = $db_af_threshold;
-	}(split /,/, $configs{'db_threshold'});
-
-	my (%sample_ques, @sample_ques_adjs);
-	my (@uhead_samples, @head_sample_names, %cgenes, %mgenes, %gs, %sgt);
-
-	open VCF, "$family_vcf" or die $!;
-
-	open OT, ">$out_dir/$out_file.tsv" or die $!;
-	open CHOT, ">$out_dir/$out_file.comphet.c.tsv" or die $!;
-	open MOT, ">$out_dir/$out_file.comphet.m.tsv" or die $!;
-
-	my ($i, %ssite, %gcount, %gselected,  %sgene, %genes, %trs);
-
-	my $vep_key;
+sub VCF2PopulationDataTSV{
+	my ($vcf, $sig_chr, $out_dir, $out_file) = @_;
+	open VCF, "$vcf" or die $!;
+	open OTAF, "> $out_dir/$out_file.PopulationData.AF.tsv" or die $!;
+	open OTGC, "> $out_dir/$out_file.PopulationData.GC.tsv" or die $!;
 	while(<VCF>){
-    	chomp;
-	    $vep_key = $1 if /##INFO=\<ID=CSQ,Number=\.,Type=String,Description="Consequence type as predicted by VEP\. Format: (\S+)"\>/;
-	    next if /^##/;
-		    @header = (split /\t/) if /^#/;
-    @sampleNames = @header[9..$#header] if /^#/;
-    my (@head_samples, @unknown_samples, @ques_raws, @que_unknowns) = ((),());
+		chomp;
+		next if /^#/;
+		my ($chr, $pos, $rs, $ref, $alt) = (split /\t/)[0,1,2,3,4];
+		$chr =~ s/chr//;
+        next unless $chr eq $sig_chr;
+		foreach my $allele (split /,/, $alt){
+    	    my ($gc_info, $pd_info);
 
-    map{
-        unshift @head_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'case' or $samples{$_}->{phenotype} =~ /\wP/;
-        unshift @ques_raws, "$_" if $samples{$_}->{phenotype} eq 'case' or $samples{$_}->{phenotype} =~ /\wP/;
-        push @head_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'control' or $samples{$_}->{phenotype} =~ /\wC/;
-        push @ques_raws, "$_" if $samples{$_}->{phenotype} eq 'control' or $samples{$_}->{phenotype} =~ /\wC/;
-        push @unknown_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'unknown' or $samples{$_}->{phenotype} =~ /\wU/;
-        push @que_unknowns, "$_" if $samples{$_}->{phenotype} eq 'unknown' or $samples{$_}->{phenotype} =~ /\wU/;
+			my ($ref_dbcase_query_results) = DisGen::general::GenotypeCount::get_gc($chr, $pos, $ref, $allele);
+        	my @dbcase_query_results = @$ref_dbcase_query_results;
+	        $gc_info = join "\t", @dbcase_query_results;	
+			print OTGC "$chr:$pos:$ref:$allele\t$gc_info\n";
 
-    }@sampleNames;
-    push @head_samples, @unknown_samples;
-    push @ques_raws, @que_unknowns;
-
-    my @detail_head_samples;
-    map{push @detail_head_samples, "detail-$_";}(@head_samples);
-    @head_sample_names = (@detail_head_samples, @head_samples);
-    @uhead_samples = @head_samples;
-
-    my $que_id = 0;
-    map{$sample_ques{$_} = $que_id; $que_id ++;}@sampleNames if /^#/;
-    map{$sample_ques_adjs[$_] = $sample_ques{$ques_raws[$_]};}(0..$#ques_raws) if /^#/;
-
+			my ($temp_v_snv_num, $temp_v_indel_num, $ref_dbpp_query_results) = DisGen::general::AlleleFrequency::get_all_af($chr, $pos, $ref, $allele);
+        	my @dbpp_query_results = @$ref_dbpp_query_results;
+	        $pd_info = join "\t", @dbpp_query_results;	
+			print OTAF "$pd_info\n";
+		}
+	}
+	close VCF;
 }
+
+sub VCF2ComputationalDataTSV{}
+sub VCF2FunctionalDataTSV{}
+sub VCF2SegregationDataTSV{}
+sub VCF2OtherDatabasesTSV{}
 
 sub vcf2test{
 	my ($vcf, $sig_chr, $out_dir, $out_file, $config) = @_;
