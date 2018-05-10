@@ -12,29 +12,29 @@ sub parseSDB {
         chomp;
         next if /^#/;
         if (/^\@/){
-            my ($famile_ID, $path2predigree) = ($1, $2) if /@\s?(\S+):predigree:(\S+)$/;
-            $predigrees{$famile_ID} = "$path2predigree";
+            my ($famileID, $path2predigree) = ($1, $2) if /@\s?(\S+):predigree:(\S+)$/;
+            $predigrees{$famileID} = "$path2predigree";
             next;
         }
 
-        my ($familyID, $sampleID, $sampleName, $gender, $age, $population, $fatherName, $motherName, $disease, $phenotype, $lanes, $chip, $platform, $grch) = (split /\s+/);
-        $ss{$sampleID} = {
-            familyID => $familyID,
-            sampleID => $sampleID,
-            sampleName => $sampleName,
+        my ($family_id, $sample_id, $sample_name, $gender, $age, $population, $father_name, $mother_name, $disease, $phenotype, $lane_info, $region, $sequence_platform, $grch) = (split /\s+/);
+        $ss{$sample_id} = {
+            family_id => $family_id,
+            sample_id => $sample_id,
+            sample_name => $sample_name,
             gender => $gender,
             age => $age,
             population => $population,
-            fatherName => $fatherName,
-            motherName => $motherName,
+            father_name => $father_name,
+            mother_name => $mother_name,
             disease => $disease,
             phenotype => $phenotype,
-            lanes => $lanes,
-            chip => $chip,
-            platform => $platform,
+            lane_info => $lane_info,
+            region => $region,
+            sequence_platform => $sequence_platform,
             grch => $grch,
-            predigree => $predigrees{$familyID},
-            ms => $mss{$familyID}
+            predigree => $predigrees{$family_id},
+            ms => $mss{$family_id}
         };
     }
     close DB;
