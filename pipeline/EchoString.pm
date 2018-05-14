@@ -1,5 +1,5 @@
 #! /usr/bin/perl
-package DisGen::general::AlleleFrequency;
+package DisGen::pipeline::EchoString;
 
 sub swrd {
 	my $sh=shift;
@@ -7,3 +7,4 @@ sub swrd {
 	return $ostr;
 }
 
+1;
