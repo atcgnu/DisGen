@@ -7,7 +7,13 @@ sub robust2execute {
     $cmdline2.="    [ -e $logpath/$logbase.done ] &&  i=$cycle_num && mv $tmp_dir/* $dest_dir/ 2> /dev/null\ndone\n";
     $cmdline2.="[ ! -e $logpath/$logbase.done ] && echo check $shellpath $logbase step >> $shellpath.error && exit 1\n\n";
     print $out_fh $cmdline2;
-	return ("DONE");
+}
+
+
+sub EchoSWRD {
+    my ($logpath, $logbase, $shellpath, $out_fh)=@_;
+	my $ostr = "[ -e $logpath/$logbase.done ] && echo Still_waters_run_deep 1>&2 &&  echo Still_waters_run_deep >$shellpath.sign\n";
+    print $out_fh $ostr;
 }
 
 1;

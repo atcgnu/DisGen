@@ -2,7 +2,7 @@ package DisGen::pipeline::StageMkdir;
 
 sub byFSC{
 #	($out_dir, $version, $sample_id, $family_id, \%lanes)
-	my ($out_dir, $version, $sample_id, $family_id, $ref2lane) = @_;
+	my ($out_dir, $version, $sample_id, $family_id, $ref2lane, $bychr) = @_;
 	my %lanes = %$ref2lane;
     `mkdir -p $out_dir/$family_id/0.sh.e.o` unless -e "$out_dir/$family_id/0.sh.e.o";
     `mkdir -p $out_dir/$family_id/1.individual` unless -e "$out_dir/$family_id/1.individual";
@@ -31,13 +31,15 @@ sub byFSC{
     `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/sh.e.o` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/sh.e.o";
     `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/result` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/result";
     `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/result/ROH` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/result/ROH";
-    `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr";
-    `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr";
 
-    map{
-        `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_";
-        `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat";
-    }(1..22,"X","Y","M");
+	if($bychr eq 'YES'){
+    	`mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr";
+    	`mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr";
+	    map{
+    	    `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_";
+        	`mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat";
+	    }(1..22,"X","Y","M");
+	}
 
     foreach my $slane (keys %lanes){
         my $i;
