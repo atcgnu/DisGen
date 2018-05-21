@@ -4,6 +4,7 @@ package DisGen::general::VCF2;
 use DisGen::general::MakeOpen;
 use DisGen::general::AlleleFrequency;
 use DisGen::general::GenotypeCount;
+use DisGen::general::ComputationalData;
 
 sub VCF2PopulationDataTSV{
 	my ($vcf, $sig_chr, $out_dir, $out_file) = @_;
@@ -33,7 +34,28 @@ sub VCF2PopulationDataTSV{
 	close VCF;
 }
 
-sub VCF2ComputationalDataTSV{}
+sub VCF2ComputationalDataTSV{
+	my ($vcf, $sig_chr, $out_dir, $out_file, $ref_version) = @_;
+    open VCF, "$vcf" or die $!;
+    open OTAL, "> $out_dir/$out_file.ComputationalData.AL.tsv" or die $!;
+    while(<VCF>){
+        chomp;
+        next if /^#/;
+        my ($chr, $pos, $rs, $ref, $alt) = (split /\t/)[0,1,2,3,4];
+        $chr =~ s/chr//;
+        next unless $chr eq $sig_chr;
+        foreach my $allele (split /,/, $alt){
+            my ($al_info);
+            my ($ref_query_results) = DisGen::general::ComputationalData::get_all_predict($chr, $pos, $ref, $allele, $ref_version);
+            my @query_results = @$ref_query_results;
+            $al_info = join "\t", @query_results;
+#            print OTAL "$chr:$pos:$ref:$allele\t$al_info\n";
+            print OTAL "$al_info\n" unless $al_info =~ /^$/;
+		}
+	}
+	close OTAL;
+}
+
 sub VCF2FunctionalDataTSV{}
 sub VCF2SegregationDataTSV{}
 sub VCF2OtherDatabasesTSV{}

@@ -13,7 +13,8 @@ our %_wftool_ = (
     bwa => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/bwa-0.7.10/bwa",
     filtBAM => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/filterBAM.pl",
     java => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/jre1.8.0_131/bin/java",
-    gatk => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/GenomeAnalysisTK-3.3-0/GenomeAnalysisTK.jar",
+#    gatk => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/GenomeAnalysisTK-3.3-0/GenomeAnalysisTK.jar",
+    gatk => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/gatk-4.0.0.0/gatk-package-4.0.0.0-local.jar",
     picardtoolsdir => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/picard-tools-1.117",
     samtools => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/samtools-0.1.19/samtools",
     bamByChr => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/bamByChr.pl",
@@ -32,6 +33,11 @@ our %_wfdata_ = (
     bundle_28_hg19 =>"/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/bundle_2.8_hg19",
     ucsc19ref => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/bundle_2.8_hg19/ucsc.hg19.fasta",
     bed_dir => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/BED",
+#    ComputationalData_VL => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
+    dbNSFP => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
+#    ComputationalData_GL => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
+    OtherDB =>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/clinvar_hgmd',
+    gwas_catalog=>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/gwas',
 
 );
 
