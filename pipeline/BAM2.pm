@@ -29,20 +29,31 @@ sub dedupbam {
 }
 
 sub realnbam {
-	my ($tool, $input_bam, $out_file_prefix, $out_dir) = @_;
+	my ($tool, $ref_version, $input_bam, $out_file_prefix, $out_dir) = @_;
     my $cmd;
 
-	$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T RealignerTargetCreator -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -I $input_bam -o $out_dir/$out_file_prefix.dedup.intervals -nt 4 && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T IndelRealigner -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -targetIntervals $out_dir/$out_file_prefix.dedup.intervals -I $input_bam -o $out_dir/$out_file_prefix.dedup.realn.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.bam $out_dir/$out_file_prefix.dedup.realn.bai";
+	if ($ref_version =~ /hg19|GRCh37/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T RealignerTargetCreator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam -o $out_dir/$out_file_prefix.dedup.intervals -nt 4 && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T IndelRealigner -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -targetIntervals $out_dir/$out_file_prefix.dedup.intervals -I $input_bam -o $out_dir/$out_file_prefix.dedup.realn.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.bam $out_dir/$out_file_prefix.dedup.realn.bai";
+	}elsif($ref_version =~ /hg38|GRCh38/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} RealignerTargetCreator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -o $out_dir/$out_file_prefix.dedup.intervals -nt 4 && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} IndelRealigner -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -targetIntervals $out_dir/$out_file_prefix.dedup.intervals -I $input_bam -o $out_dir/$out_file_prefix.dedup.realn.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.bam $out_dir/$out_file_prefix.dedup.realn.bai";
+
+	}
 
 	return ($cmd);
 }
 
 sub bqsrbam {
-	my ($tool, $input_bam, $out_file_prefix, $out_dir, $region) = @_;
+	my ($tool, $ref_version, $input_bam, $out_file_prefix, $out_dir, $region) = @_;
     my ($bed, $cmd);
 
 	$bed = "-L $region" if -e "$region";
-	$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -I $input_bam -knownSites $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/dbsnp_138.hg19.vcf -o $out_dir/$out_file_prefix.dedup.realn.recal.grp $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T PrintReads -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -I $input_bam -BQSR $out_dir/$out_file_prefix.dedup.realn.recal.grp -o $out_dir/$out_file_prefix.dedup.realn.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.recal.bam $out_dir/$out_file_prefix.dedup.realn.recal.bai";
+
+	if ($ref_version =~ /hg19|GRCh37/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam -knownSites $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/dbsnp_138.hg19.vcf -o $out_dir/$out_file_prefix.dedup.realn.recal.grp $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T PrintReads -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam -BQSR $out_dir/$out_file_prefix.dedup.realn.recal.grp -o $out_dir/$out_file_prefix.dedup.realn.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.recal.bam $out_dir/$out_file_prefix.dedup.realn.recal.bai";
+	}elsif($ref_version =~ /hg38|GRCh38/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -knownSites $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/dbsnp_146.hg38.vcf -o $out_dir/$out_file_prefix.dedup.realn.recal.grp $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} PrintReads -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -BQSR $out_dir/$out_file_prefix.dedup.realn.recal.grp -o $out_dir/$out_file_prefix.dedup.realn.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.realn.recal.bam $out_dir/$out_file_prefix.dedup.realn.recal.bai";
+	
+	}
 
 	return ($cmd);
 }
@@ -61,11 +72,18 @@ sub cram {
 }
 
 sub gvcf2vcf {
-    my ($tool, $input_bam, $out_file_prefix, $out_dir, $region) = @_;
+    my ($tool, $ref_version, $input_bam, $out_file_prefix, $out_dir, $region) = @_;
     my ($bed, $cmd);
 
-    $bed = "-L $region" if -e "$DisGen::general::Resource::_wfdata_{bed_dir}/${region}_0bp/${region}_0bp.bed"; # if region is WGS, -L argument is not need
-    $cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T HaplotypeCaller -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -I $input_bam -ERC GVCF -variant_index_type LINEAR -variant_index_parameter 128000 --dbsnp $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/dbsnp_138.hg19.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gvcf.vcf $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T GenotypeGVCFs -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta --variant $out_dir/$out_file_prefix.gvcf.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gatkHC.vcf --dbsnp $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/dbsnp_138.hg19.vcf -stand_call_conf 30.0 -stand_emit_conf 10.0 $bed";
+
+    $bed = "-L $region" if -e $region; # if region is WGS, -L argument is not need
+
+    if ($ref_version =~ /hg19|GRCh37/i){
+	    $cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T HaplotypeCaller -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta -I $input_bam -ERC GVCF -variant_index_type LINEAR -variant_index_parameter 128000 --dbsnp $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/dbsnp_138.hg19.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gvcf.vcf $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} -T GenotypeGVCFs -R $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/ucsc.hg19.fasta --variant $out_dir/$out_file_prefix.gvcf.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gatkHC.vcf --dbsnp $DisGen::general::Resource::_wfdata_{bundle_28_hg19}/dbsnp_138.hg19.vcf -stand_call_conf 30.0 -stand_emit_conf 10.0 $bed";
+
+    }elsif($ref_version =~ /hg38|GRCh38/i){
+	    $cmd = "$DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} HaplotypeCaller -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -ERC GVCF -variant_index_type LINEAR -variant_index_parameter 128000 --dbsnp $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/dbsnp_146.hg38.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gvcf.vcf $bed && $DisGen::general::Resource::_wftool_{java} -Xmx10g -Djava.io.tmpdir=`pwd`/tmp -jar $DisGen::general::Resource::_wftool_{gatk} GenotypeGVCFs -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta --variant $out_dir/$out_file_prefix.gvcf.vcf -A StrandOddsRatio -A Coverage -A QualByDepth -A FisherStrand -A MappingQualityRankSumTest -A ReadPosRankSumTest -A RMSMappingQuality -o $out_dir/$out_file_prefix.gatkHC.vcf --dbsnp $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/dbsnp_146.hg38.vcf -stand_call_conf 30.0 -stand_emit_conf 10.0 $bed";
+	}
 
 	return ($cmd);
 }
