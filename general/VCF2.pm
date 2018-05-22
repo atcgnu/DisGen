@@ -6,7 +6,45 @@ use DisGen::general::AlleleFrequency;
 use DisGen::general::GenotypeCount;
 use DisGen::general::ComputationalData;
 
-sub VCF2PopulationDataTSV{
+sub CosegregationTSV{
+    my ($vcf, $ref_samples) = @_;
+    open VCF, "$vcf" or die $!;
+	open OTM, "> $out_dir/$out_file.Cosegregation.monoplace.tsv" or die $!;
+	open OTB, "> $out_dir/$out_file.Cosegregation.biplace.tsv" or die $!;
+#	open OTG, "> $out_dir/$out_file.Cosegregation.genelevel.tsv" or die $!;
+	while(<VCF>){
+        chomp;
+		next if /^##/;
+		if (/^#/){
+			my @header = (split /\t/);
+		    my @sampleNames = @header[9..$#header];
+
+	    	my (@head_samples, @unknown_samples, @ques_raws, @que_unknowns) = ((),());
+	
+			map{
+		        unshift @head_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'case' or $samples{$_}->{phenotype} =~ /\wP/; # case first
+    		    unshift @ques_raws, "$_" if $samples{$_}->{phenotype} eq 'case' or $samples{$_}->{phenotype} =~ /\wP/; # case first
+        		push @head_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'control' or $samples{$_}->{phenotype} =~ /\wC/; # control follow case
+		        push @ques_raws, "$_" if $samples{$_}->{phenotype} eq 'control' or $samples{$_}->{phenotype} =~ /\wC/; # control follow case
+    		    push @unknown_samples, "$samples{$_}->{phenotype}-$_" if $samples{$_}->{phenotype} eq 'unknown' or $samples{$_}->{phenotype} =~ /\wU/; # unknown at the end
+        		push @que_unknowns, "$_" if $samples{$_}->{phenotype} eq 'unknown' or $samples{$_}->{phenotype} =~ /\wU/; # unknown at the end
+		    }@sampleNames;
+
+		    push @head_samples, @unknown_samples;
+    		push @ques_raws, @que_unknowns;		
+
+	    	my $que_id = 0;
+		    map{$sample_ques{$_} = $que_id; $que_id ++;}@sampleNames;
+    		map{$sample_ques_adjs[$_] = $sample_ques{$ques_raws[$_]};}(0..$#ques_raws);
+		}else{
+			next;
+		}
+
+	}
+	close VCF;
+}
+
+sub PopulationDataTSV{
 	my ($vcf, $sig_chr, $out_dir, $out_file) = @_;
 	open VCF, "$vcf" or die $!;
 	open OTAF, "> $out_dir/$out_file.PopulationData.AF.tsv" or die $!;
@@ -34,7 +72,7 @@ sub VCF2PopulationDataTSV{
 	close VCF;
 }
 
-sub VCF2ComputationalDataTSV{
+sub ComputationalDataTSV{
 	my ($vcf, $sig_chr, $out_dir, $out_file, $ref_version) = @_;
     open VCF, "$vcf" or die $!;
     open OTAL, "> $out_dir/$out_file.ComputationalData.AL.tsv" or die $!;
@@ -56,9 +94,9 @@ sub VCF2ComputationalDataTSV{
 	close OTAL;
 }
 
-sub VCF2FunctionalDataTSV{}
-sub VCF2SegregationDataTSV{}
-sub VCF2OtherDatabasesTSV{}
+sub FunctionalDataTSV{}
+sub SegregationDataTSV{}
+sub OtherDatabasesTSV{}
 
 sub vcf2test{
 	my ($vcf, $sig_chr, $out_dir, $out_file, $config) = @_;
