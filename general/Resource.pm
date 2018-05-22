@@ -3,7 +3,7 @@
 package DisGen::general::Resource;
 
 our %env_vars = (
-    PATH => "\$PATH",
+    PATH => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin:\$PATH",
     PERL5LIB => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/perl-5.24.0/lib"
 );
 
@@ -14,12 +14,13 @@ our %_wftool_ = (
     bwa => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/bwa-0.7.17/bwa",
     filtBAM => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/filterBAM.pl",
     java => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/jre1.8.0_131/bin/java",
-#    gatk => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/GenomeAnalysisTK-3.3-0/GenomeAnalysisTK.jar",
-    gatk => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/gatk-4.0.0.0/gatk-package-4.0.0.0-local.jar",
+    gatk3 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/GenomeAnalysisTK-3.3-0/GenomeAnalysisTK.jar",
+    gatk4 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/gatk-4.0.0.0/gatk",
     picardtoolsdir => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/picard-tools-1.117",
     samtools => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/samtools-0.1.19/samtools",
     bamByChr => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/bamByChr.pl",
-    VEP => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/ensembl-tools-release-77/scripts/variant_effect_predictor/variant_effect_predictor.pl",
+#    VEP77 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/ensembl-tools-release-77/scripts/variant_effect_predictor/variant_effect_predictor.pl",
+    VEP91 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/VEP/v91/ensembl-vep/vep",
     bcftools => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/samtools-0.1.19/bcftools/bcftools",
     bgzip => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/bgzip",
     tabix => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/tabix",
@@ -46,6 +47,8 @@ our %_wfdata_ = (
 #    ComputationalData_GL => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
     OtherDB =>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/clinvar_hgmd',
     gwas_catalog=>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/gwas',
+	vep77cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/cache',
+	vep91cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/VEP/v91/ensembl-vep/cache',
 
 );
 
