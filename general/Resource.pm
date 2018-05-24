@@ -4,7 +4,7 @@ package DisGen::general::Resource;
 
 our %env_vars = (
     PATH => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin:\$PATH",
-    PERL5LIB => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/perl-5.24.0/lib"
+    PERL5LIB => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/perl-5.24.0/lib:/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/vcftools_0.1.12b/lib/perl5/site_perl"
 );
 
 our %_wftool_ = (
@@ -24,6 +24,7 @@ our %_wftool_ = (
     bcftools => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/samtools-0.1.19/bcftools/bcftools",
     bgzip => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/bgzip",
     tabix => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/tabix",
+   vcf_concat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/vcftools_0.1.12b/bin/vcf-concat",
 
 
 );

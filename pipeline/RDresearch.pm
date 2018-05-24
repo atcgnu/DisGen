@@ -167,14 +167,21 @@ sub StageChr {
 
     my ($ref_version, @jobIDs_chr, @jobIDs_sample);
 	
-	$ref_version = 'hg19' if $version =~ /hg19|grch37/i;
-	$ref_version = 'hg38' if $version =~ /hg38|grch38/i;
-	my $bed_dir = "bed_dir_$ref_version";
+    $ref_version = 'hg19' if $version =~ /hg19|grch37/i;
+    $ref_version = 'hg38' if $version =~ /hg38|grch38/i;
+    my $bed_dir = "bed_dir_$ref_version";
+
+    my $log_dir = "$out_dir/$sample_id/$version/0.temp/2.sample/sh.e.o/log";
+    my $tmp_dir = "$out_dir/$sample_id/$version/0.temp/2.sample/tmp";
+    my $des_dir = "$out_dir/$sample_id/$version/0.temp/2.sample/result";
+
 #    my (@jobIDs_chr, @jobIDs_sample);
     my ($chr_gvcf_vcf, $chr_gatk_vcf);
     my $script_merge = "$out_dir/$sample_id/$version/0.temp/2.sample/sh.e.o/stage_sample_mergeChrVCF.sh";
 
     open SOT, ">$script_merge" or die $!;
+    my ($setenv_cmd) = DisGen::pipeline::SETENV::DEFAULT('default');
+    print SOT "$setenv_cmd\n\n";
 
     foreach my $chr (1..22,'X','Y','M'){
         my $script = "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$chr/sh.e.o/stage_chr.sh";
@@ -208,8 +215,8 @@ sub StageChr {
     	push @jobIDs_chr, "$script:8G:1CPU";
     }
 
-    DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChrvcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gvcf_vcf > $dest_alignment/sample.gvcf.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gatk_vcf > $dest_alignment/sample.gatkHC.vcf", 3, *SOT, "$tmp_dir", "$dest_call");
-	DisGen::pipeline::Monitor::EchoSWRD($log_dir , "mergeChrvcf", $script_merge, *SOT);
+    DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChrvcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gvcf_vcf > $tmp_dir/sample.gvcf.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gatk_vcf > $tmp_dir/sample.gatkHC.vcf", 3, *SOT, "$tmp_dir", "$des_dir");
+    DisGen::pipeline::Monitor::EchoSWRD($log_dir , "mergeChrvcf", $script_merge, *SOT);
 
     push @jobIDs_sample, "$script_merge:1G:1CPU";
     return (\@jobIDs_chr, \@jobIDs_sample);
