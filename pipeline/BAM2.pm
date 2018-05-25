@@ -58,7 +58,7 @@ sub bqsrbam {
 		}
 	}elsif($tool =~ /gatk4/i){
 		if ($ref_version =~ /hg19|GRCh37/i){
-			$cmd = "$DisGen::general::Resource::_wftool_{gatk4} BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam --known-sites $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/dbsnp_138.hg19.vcf -O $out_dir/$out_file_prefix.dedup.recal.table $bed && $DisGen::general::Resource::_wftool_{gatk4} ApplyBQSR -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -bqsr $out_dir/$out_file_prefix.dedup.recal.table -O $out_dir/$out_file_prefix.dedup.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.recal.bam $out_dir/$out_file_prefix.dedup.recal.bai";
+			$cmd = "$DisGen::general::Resource::_wftool_{gatk4} BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam --known-sites $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/dbsnp_138.hg19.vcf -O $out_dir/$out_file_prefix.dedup.recal.table $bed && $DisGen::general::Resource::_wftool_{gatk4} ApplyBQSR -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta -I $input_bam -bqsr $out_dir/$out_file_prefix.dedup.recal.table -O $out_dir/$out_file_prefix.dedup.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.recal.bam $out_dir/$out_file_prefix.dedup.recal.bai";
 
 		}elsif($ref_version =~ /hg38|GRCh38/i){
 			$cmd = "$DisGen::general::Resource::_wftool_{gatk4} BaseRecalibrator -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam --known-sites $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/dbsnp_146.hg38.vcf -O $out_dir/$out_file_prefix.dedup.recal.table $bed && $DisGen::general::Resource::_wftool_{gatk4} ApplyBQSR  -R $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta -I $input_bam -bqsr $out_dir/$out_file_prefix.dedup.recal.table -O $out_dir/$out_file_prefix.dedup.recal.bam && rm $input_bam && $DisGen::general::Resource::_wftool_{samtools} index $out_dir/$out_file_prefix.dedup.recal.bam $out_dir/$out_file_prefix.dedup.recal.bai";
@@ -132,4 +132,13 @@ sub gvcf {
     }
     return ($cmd);
 }
+
+sub sr_inversion {
+	if ($ref_version =~ /hg19|GRCh37/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta";
+	}elsif($ref_version =~ /hg38|GRCh38/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta";
+	}
+}
+
 1;
