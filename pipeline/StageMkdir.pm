@@ -38,7 +38,7 @@ sub byFSC{
 	    map{
     	    `mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_";
         	`mkdir -p $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat` unless -e "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$_/Stat";
-	    }(1..22,"X","Y","M");
+	    }(1..22,"X","Y","M", "U");
 	}
 
     foreach my $slane (keys %lanes){

@@ -133,6 +133,22 @@ sub gvcf {
     return ($cmd);
 }
 
+sub vcf {
+    my ($tool, $ref_version, $input_bam, $out_file_prefix, $out_dir, $region, $interval) = @_;
+    my ($bed, $cmd);
+    $bed = "-L $region" if -e $region; # if region is WGS, -L argument is not need
+    if($tool =~ /platypus/i){
+        if ($ref_version =~ /hg19|GRCh37/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta --output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
+        }elsif($ref_version =~ /hg38|GRCh38/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta--output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
+		}
+	}
+
+    return ($cmd);
+
+}
+
 sub sr_inversion {
 	if ($ref_version =~ /hg19|GRCh37/i){
 		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta";

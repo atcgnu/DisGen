@@ -128,18 +128,18 @@ sub StageSample {
 
     my ($bqsrbam_cmd) = DisGen::pipeline::BAM2::bqsrbam('gatk4', $ref_version, "$dest_alignment/$out_file_prefix.dedup.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr${chr}.bed"); 
 	DisGen::pipeline::Monitor::robust2execute($log_dir , "dedupedBAM2bqsrBAM", $script, $bqsrbam_cmd, 3, *OT, "$tmp_dir", "$dest_alignment");
-	DisGen::pipeline::Monitor::EchoSWRD($log_dir , "dedupedBAM2bqsrBAM", $script, *OT);
+#	DisGena::pipeline::Monitor::EchoSWRD($log_dir , "dedupedBAM2bqsrBAM", $script, *OT);
 
 	if($bychr eq 'YES'){
 
     	my $dest_bychr = "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr";
 
 	    my ($chrbam_cmd) = DisGen::pipeline::BAM2::chrbam('bamByChr', "$dest_alignment/$out_file_prefix.dedup.recal.bam", "$out_file_prefix", "$dest_bychr"); 
-		DisGen::pipeline::Monitor::robust2execute($log_dir , "sampleBAM2chrBAM", $script, $chrbam_cmd, 3, *OT, "$dest_bychr", "$dest_bychr");
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "sampleBAM2chrBAM", $script, $chrbam_cmd, 3, *OT, "$tmp_dir", "$dest_bychr");
+		DisGen::pipeline::Monitor::EchoSWRD($log_dir , "sampleBAM2chrBAM", $script, *OT);
 
 		my ($ref_job_chr, $ref_job_merge) = &StageChr($out_dir, $version, $sample_id, $region);
 
-		DisGen::pipeline::Monitor::EchoSWRD($log_dir , "sampleBAM2chrBAM", $script, *OT);
 	    close OT;
     	push @jobIDs, "$script:8G:8CPU";
 	    return (\@jobIDs, $ref_job_chr, $ref_job_merge);
@@ -199,13 +199,18 @@ sub StageChr {
         my $dest_call = "$out_dir/$sample_id/$version/0.temp/2.sample/ByChr/chr$chr";
         my $out_file_prefix = "chr$chr";
 
-        my ($bam2gvcf2vcf_cmd) = DisGen::pipeline::BAM2::gvcf2vcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr${chr}.bed");
+#        my ($bam2gvcf2vcf_cmd) = DisGen::pipeline::BAM2::gvcf2vcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr${chr}.bed");
 #===========
-	    my ($bam2gvcf_cmd) = DisGen::pipeline::BAM2::gvcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
+	    my ($bam2gvcf_cmd) = DisGen::pipeline::BAM2::gvcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2GVCF", $script, $bam2gvcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
 
-	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$dest_call/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
+	    my ($bam2platypusVCF_cmd) = DisGen::pipeline::BAM2::vcf('platypus', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix.platypus", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.interval");
+ 
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2platypusVCF", $script, $bam2platypusVCF_cmd, 3, *OT, "$tmp_dir", "$dest_call");
+
+	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$dest_call/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "GVCF2VCF", $script, $gvcf2vcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
+
 
         $chr_gvcf_vcf .= " $dest_call/chr$chr.g.vcf";
         $chr_gatk_vcf .= " $dest_call/chr$chr.gatkHC.vcf";
