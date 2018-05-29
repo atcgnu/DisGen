@@ -143,12 +143,43 @@ sub vcf {
         }elsif($ref_version =~ /hg38|GRCh38/i){
 			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta--output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
 		}
+	}elsif($tool =~ /speedseq/i){
+        if ($ref_version =~ /hg19|GRCh37/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{speedseq} var -o $out_dir/$out_file_prefix.speedseq -w $region -t 4 $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta $input_bam";
+        }elsif($ref_version =~ /hg38|GRCh38/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{speedseq} var -o $out_dir/$out_file_prefix.speedseq -w $region -t 4 $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta $input_bam";
+        }
+
 	}
 
     return ($cmd);
 
 }
 
+sub stat_by_chr {
+    my ($tool, $input_bam, $out_dir, $region, $ccds) = @_;
+    my ($bed, $cmd);
+    if($tool =~ /SoapChrStat/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SoapChrStat} -region $region -CCDS $ccds -bam $input_bam -OutDir $out_dir";
+	}elsif($tool =~ /SoapAllStat/i){
+		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SoapAllStat} -OutDir $out_dir -StatByChrDir ? -sample ? -sex ? -plot";
+#        print SH "$_wftool_{perl} $_wftool_{SoapAllStat} -OutDir $sample_dir/result/BAM_Stat  -StatByChrDir $sample_dir/result/BAM_Stat/StatByChr -sample $sampleName -sex \$sex -plot\n";
+
+	}
+
+    return ($cmd);
+}
+
+sub stat_by_sample {
+    my ($tool, $out_dir, $stat_chr_dir, $sample, $gender) = @_;
+    my ($cmd);
+    if($tool =~ /SoapAllStat/i){
+        $cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SoapAllStat} -OutDir $out_dir -StatByChrDir $stat_chr_dir -sample $sample -sex $gender -plot";
+	}
+
+    return ($cmd);
+
+}
 sub sr_inversion {
 	if ($ref_version =~ /hg19|GRCh37/i){
 		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta";

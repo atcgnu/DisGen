@@ -55,9 +55,15 @@ sub StageLane {
                 my ($linkFQ_cmd) = DisGen::pipeline::FQ2::linkFQ($fq1, $fq2, "$tmp_dir"); # Attention: check-up the quality system applied by sequencer
 				DisGen::pipeline::Monitor::robust2execute($log_dir , "linkFQ", $script, $linkFQ_cmd, 3, *OT, "$tmp_dir", "$dest_cleanFQ");
 
+                my ($rawFQ_QC_cmd) = DisGen::pipeline::FQ2::stat("fastqc", $fq1, $fq2, "$tmp_dir"); # Attention: check-up the quality system applied by sequencer
+				DisGen::pipeline::Monitor::robust2execute($log_dir , "rawFQ_QC", $script, $rawFQ_QC_cmd, 3, *OT, "$tmp_dir", "$dest_cleanFQ");
+
                 my ($cleanFQ_cmd) = DisGen::pipeline::FQ2::cleanFQ("SOAPnuke", $version, $fq1, $fq2, "$tmp_dir", $cleanFQ1, $cleanFQ2); # Attention: check-up the quality system applied by sequencer
 				#my ($logpath, $logbase, $shellpath, $cmdline, $cycle_num, $out_fh, $tmp_dir, $dest_dir)=@_;
 				DisGen::pipeline::Monitor::robust2execute($log_dir , "rawFQ2cleanedFQ", $script, $cleanFQ_cmd, 3, *OT, "$tmp_dir", "$dest_cleanFQ");
+
+                my ($cleanFQ_QC_cmd) = DisGen::pipeline::FQ2::stat("fastqc", "$dest_cleanFQ/pe_1.fq.gz", "$dest_cleanFQ/pe_2.fq.gz", "$tmp_dir"); # Attention: check-up the quality system applied by sequencer
+				DisGen::pipeline::Monitor::robust2execute($log_dir , "cleanFQ_QC", $script, $cleanFQ_QC_cmd, 3, *OT, "$tmp_dir", "$dest_cleanFQ");
 
 # my ($tool, $rg, $ref, $outDir, $cleanFQ1, $cleanFQ2) = @_;
                 my ($alignment_cmd) = DisGen::pipeline::FQ2::bam('bwa', $ref_version, $rg, "$dest_cleanFQ/$cleanFQ1", "$dest_cleanFQ/$cleanFQ2", "$tmp_dir", $out_file_prefix); # Attention: check-up the quality system applied by sequencer
@@ -85,8 +91,10 @@ sub StageLane {
 }
 
 sub StageSample {
-    my ($out_dir, $version, $sample_id, $region, $ref_lanes, $bychr) = @_;
+    my ($out_dir, $version, $sample_id, $region, $ref_lanes, $bychr, $ref_cohort) = @_;
 	my %lanes = %$ref_lanes;
+	my %cohort = %$ref_cohort;
+
     my ($ref_version, @jobIDs);
 	
 	$ref_version = 'hg19' if $version =~ /hg19|grch37/i;
@@ -138,7 +146,7 @@ sub StageSample {
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "sampleBAM2chrBAM", $script, $chrbam_cmd, 3, *OT, "$tmp_dir", "$dest_bychr");
 		DisGen::pipeline::Monitor::EchoSWRD($log_dir , "sampleBAM2chrBAM", $script, *OT);
 
-		my ($ref_job_chr, $ref_job_merge) = &StageChr($out_dir, $version, $sample_id, $region);
+		my ($ref_job_chr, $ref_job_merge) = &StageChr($out_dir, $version, $sample_id, $region, $ref_cohort);
 
 	    close OT;
     	push @jobIDs, "$script:8G:8CPU";
@@ -163,7 +171,9 @@ sub StageSample {
 }
 
 sub StageChr {
-    my ($out_dir, $version, $sample_id, $region) = @_;
+    my ($out_dir, $version, $sample_id, $region, $ref_cohort) = @_;
+
+	my %cohort = %$ref_cohort;
 
     my ($ref_version, @jobIDs_chr, @jobIDs_sample);
 	
@@ -201,26 +211,44 @@ sub StageChr {
 
 #        my ($bam2gvcf2vcf_cmd) = DisGen::pipeline::BAM2::gvcf2vcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr${chr}.bed");
 #===========
-	    my ($bam2gvcf_cmd) = DisGen::pipeline::BAM2::gvcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
-		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2GVCF", $script, $bam2gvcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
-
-	    my ($bam2platypusVCF_cmd) = DisGen::pipeline::BAM2::vcf('platypus', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix.platypus", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.interval");
+#stat
+#     my ($tool, $input_bam, $out_dir, $region, $ccds) = @_;
+#
+        my ($bam2stat_cmd) = DisGen::pipeline::BAM2::stat_by_chr('SoapChrStat', "$dest_call/chr$chr.bam", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed", "$DisGen::general::Resource::_wfdata_{CCDS}/chr$chr");
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2STAT", $script, $bam2stat_cmd, 3, *OT, "$tmp_dir", "$dest_call/Stat");
+# platypus
+	    my ($bam2platypusVCF_cmd) = DisGen::pipeline::BAM2::vcf('platypus', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.interval");
  
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2platypusVCF", $script, $bam2platypusVCF_cmd, 3, *OT, "$tmp_dir", "$dest_call");
-
+# speedseq
+	    my ($bam2speedseqVCF_cmd) = DisGen::pipeline::BAM2::vcf('speedseq', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.interval");
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2speedseqVCF", $script, $bam2speedseqVCF_cmd, 3, *OT, "$tmp_dir", "$dest_call");
+ 
+# gatk4
+	    my ($bam2gvcf_cmd) = DisGen::pipeline::BAM2::gvcf('gatk4', $ref_version, "$dest_call/chr$chr.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2GVCF", $script, $bam2gvcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
 	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$dest_call/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "GVCF2VCF", $script, $gvcf2vcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
 
 
         $chr_gvcf_vcf .= " $dest_call/chr$chr.g.vcf";
         $chr_gatk_vcf .= " $dest_call/chr$chr.gatkHC.vcf";
+        $chr_platypus_vcf .= " $dest_call/chr$chr.platypus.vcf";
+        $chr_speedseq_vcf .= " $dest_call/chr$chr.speedseq.vcf.gz";
 
 		DisGen::pipeline::Monitor::EchoSWRD($log_dir , "GVCF2VCF", $script, *OT);
         close OT;
     	push @jobIDs_chr, "$script:8G:1CPU";
     }
 
-    DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChrvcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gvcf_vcf > $tmp_dir/sample.gvcf.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gatk_vcf > $tmp_dir/sample.gatkHC.vcf", 3, *SOT, "$tmp_dir", "$des_dir");
+#     my ($tool, $out_dir, $stat_chr_dir, $sample, $gender) = @_;
+
+	DisGen::pipeline::Monitor::robust2execute($log_dir , "linkByChrSTAT2sample", $script_merge, "ln -s $out_dir/$sample_id/$version/0.temp/2.sample/ByChr/*/Stat/* $tmp_dir", 3, *SOT, "$tmp_dir", "$out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr");
+
+    my ($bam2sample_stat_cmd) = DisGen::pipeline::BAM2::stat_by_sample('SoapAllStat',  "$tmp_dir", "$out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr", $sample_id, $cohort{$sample_id}->{gender});
+	DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2sampleSTAT", $script_merge, $bam2sample_stat_cmd, 3, *SOT, "$tmp_dir", "$dest_call/Stat/StatByChr");
+
+    DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChrvcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gvcf_vcf > $tmp_dir/sample.gvcf.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gatk_vcf > $tmp_dir/sample.gatkHC.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_platypus_vcf  > $tmp_dir/sample.platypus.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_speedseq_vcf > $tmp_dir/sample.speedseq.vcf", 3, *SOT, "$tmp_dir", "$des_dir");
     DisGen::pipeline::Monitor::EchoSWRD($log_dir , "mergeChrvcf", $script_merge, *SOT);
 
     push @jobIDs_sample, "$script_merge:1G:1CPU";

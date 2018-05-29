@@ -9,11 +9,14 @@ our %env_vars = (
 
 our %_wftool_ = (
     perl => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/perl-5.24.0/bin/perl",
+    fastqc => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/FastQC/fastqc",
     python => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/Python-2.7.12/bin/python2.7",
 	SOAPnuke => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/SOAPnuke",
 #    bwa => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/bwa-0.7.10/bwa",
     bwa => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/bwa-0.7.17/bwa",
     filtBAM => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/filterBAM.pl",
+    SoapChrStat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/SoapChrStat.pl",
+    SoapAllStat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/script/SoapAllStat.pl",
     java => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/jre1.8.0_131/bin/java",
     gatk3 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/GenomeAnalysisTK-3.3-0/GenomeAnalysisTK.jar",
     gatk4 => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/gatk-4.0.0.0/gatk",
@@ -57,6 +60,8 @@ our %_wfdata_ = (
     gwas_catalog=>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/gwas',
 	vep77cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/cache',
 	vep91cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/VEP/v91/ensembl-vep/cache',
+    CCDS => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/CCDS",
+
 
 );
 

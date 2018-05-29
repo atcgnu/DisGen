@@ -9,8 +9,16 @@ sub linkFQ {
 	return ($cmd);
 }
 
-sub fastQC {
-    &check_log_stat($logdir, "fastqc_raw", $shell , "$_wftool_{perl} $_wftool_{fastqc} -f fastq $fq1 $fq2 -t 6 -o $out_dir", $cycle, *OT);
+sub stat {
+	my ($tool, $fq1, $fq2, $out_dir) = @_;
+	my $cmd;
+
+	if($tool =~ /fastqc/i){
+	    $cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{fastqc} -f fastq $fq1 $fq2 -t 6 -o $out_dir";
+	}else{
+		
+	}
+	return ($cmd);
 }
 
 sub cleanFQ {
