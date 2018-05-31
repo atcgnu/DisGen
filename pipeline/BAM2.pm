@@ -181,11 +181,13 @@ sub stat_by_sample {
 
 }
 sub sr_inversion {
+    my ($ref_version, $input_bam, $out_file_prefix, $out_dir) = @_;
 	if ($ref_version =~ /hg19|GRCh37/i){
 		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta";
 	}elsif($ref_version =~ /hg38|GRCh38/i){
 		$cmd = "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s1 -s 1 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{SRinversion} -i $input_bam -o $out_dir/$out_file_prefix.s2 -s 2 -r $DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta";
 	}
+	return ($cmd);
 }
 
 1;

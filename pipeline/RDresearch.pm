@@ -137,6 +137,8 @@ sub StageSample {
     my ($bqsrbam_cmd) = DisGen::pipeline::BAM2::bqsrbam('gatk4', $ref_version, "$dest_alignment/$out_file_prefix.dedup.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr${chr}.bed"); 
 	DisGen::pipeline::Monitor::robust2execute($log_dir , "dedupedBAM2bqsrBAM", $script, $bqsrbam_cmd, 3, *OT, "$tmp_dir", "$dest_alignment");
 #	DisGena::pipeline::Monitor::EchoSWRD($log_dir , "dedupedBAM2bqsrBAM", $script, *OT);
+    my ($bam2srinversion_cmd) = DisGen::pipeline::BAM2::sr_inversion($ref_version, "$dest_alignment/$out_file_prefix.dedup.recal.bam", "$out_file_prefix", "$tmp_dir");
+	DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2SRInversion", $script, $bam2srinversion_cmd, 3, *OT, "$tmp_dir", "$dest_alignment");
 
 	if($bychr eq 'YES'){
 
