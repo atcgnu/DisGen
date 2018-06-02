@@ -31,6 +31,7 @@ our %_wftool_ = (
     bcftools => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/samtools-0.1.19/bcftools/bcftools",
     bgzip => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/bgzip",
     tabix => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/bin/tabix",
+	union_vcf => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/script/multiCallerGT.panel.pl",
     vcf_concat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/vcftools_0.1.12b/bin/vcf-concat",
     speedseq => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/speedseq/bin/speedseq",
     SRinversion => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/sr_inversion_merge/SRinversion.pl",

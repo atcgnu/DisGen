@@ -141,7 +141,7 @@ sub vcf {
         if ($ref_version =~ /hg19|GRCh37/i){
 			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg19}/ucsc.hg19.fasta --output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
         }elsif($ref_version =~ /hg38|GRCh38/i){
-			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta--output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
+			$cmd = "$DisGen::general::Resource::_wftool_{python} $DisGen::general::Resource::_wftool_{platypus} callVariants --bamFiles=$input_bam --refFile=$DisGen::general::Resource::_wfdata_{gatk_bundle_hg38}/Homo_sapiens_assembly38.fasta --output=$out_dir/$out_file_prefix.platypus.vcf --regions=$interval";
 		}
 	}elsif($tool =~ /speedseq/i){
         if ($ref_version =~ /hg19|GRCh37/i){

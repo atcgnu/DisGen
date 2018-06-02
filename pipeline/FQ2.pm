@@ -64,10 +64,15 @@ sub bam {
 	if ($ref_version =~ /hg19|GRCh37/i){
 		if ($tool =~ /bwa/i){
 			$cmd = "$DisGen::general::Resource::_wftool_{bwa} mem -t 8 -R \"$rg\" -M -Y  $DisGen::general::Resource::_wfdata_{bwa7hg19ref} $cleanFQ1 $cleanFQ2 | $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{filtBAM} $out_dir/$out_file_prefix.raw.bam";	
+		}elsif($tool =~ /speedseq/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{speedseq} align -o $out_dir/$out_file_prefix.raw -M 3 -p -R \"$rg\" $DisGen::general::Resource::_wfdata_{bwa7hg19ref} $cleanFQ1 $cleanFQ2";
 		}
+
 	}elsif ($ref_version =~ /hg38|GRCh38/i){
 		if ($tool =~ /bwa/i){
 			$cmd = "$DisGen::general::Resource::_wftool_{bwa} mem -t 8 -R \"$rg\" -M -Y  $DisGen::general::Resource::_wfdata_{bwa7hg38ref} $cleanFQ1 $cleanFQ2 | $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{filtBAM} $out_dir/$out_file_prefix.raw.bam";
+		}elsif($tool =~ /speedseq/i){
+			$cmd = "$DisGen::general::Resource::_wftool_{speedseq} align -o $out_dir/$out_file_prefix.raw -M 3 -p -R \"$rg\" $DisGen::general::Resource::_wfdata_{bwa7hg38ref} $cleanFQ1 $cleanFQ2";
 		}
 	}
 }

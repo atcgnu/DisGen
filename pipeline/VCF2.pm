@@ -1,6 +1,6 @@
 package DisGen::pipeline::VCF2;
 
-sub VEPvcf {
+sub vepVCF {
     my ($tool, $ref_version, $input_vcf, $out_file_prefix, $out_dir) = @_;
     my $cmd;
 
@@ -19,6 +19,21 @@ sub VEPvcf {
 	}
 
 	return ($cmd);
+}
+
+sub unionVCF {
+# merge vcfs of one sample with difference caller to a single vcf
+	my ($tool, $input_call_result_list, $out_file_prefix, $out_dir, $bed) = @_;
+	my $cmd;
+
+	$cmd = "$DisGen::general::Resource::_wftool_{union_vcf} $bed $input_call_result_list > $out_dir/$out_file_prefix.vcf";
+
+	return ($cmd);
+}
+
+sub cohortVCF {
+# merge vcfs of difference sample to a single vcf
+#
 }
 
 1;
