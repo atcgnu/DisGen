@@ -1,3 +1,4 @@
+package DisGen::general::Cosegregation;
 
 sub monoplace {
 	my ($sampleNames_ref, $samples_ref, $chr, $is_nocall) = @_;
@@ -44,8 +45,8 @@ sub monoplace {
         }
     }
 
-    my ($ad_flag, $ar_flag, $com_het_flag, $xls_flag);
-    my ($is_ad_co, $is_ar_co, $is_comhet_co, $is_xl_co) = ('N', 'N', 'N', 'N');
+    my ($ad_flag, $ar_flag, $xls_flag);
+    my ($is_ad_co, $is_ar_co, $is_xl_co) = ('N', 'N', 'N');
 
     my $gt_sig = 'Y';
     $gt_sig = 'N' if $is_nocall eq 'Y';
@@ -55,7 +56,7 @@ sub monoplace {
 
     $ad_flag = "AD:$gt_sig$is_ad_co:$ads{'case'}:$ads{'control'}:$ads{'unknown'}";
     $ar_flag = "AR:$gt_sig$is_ar_co:$ars{'case'}:$ars{'control'}:$ars{'unknown'}";
-    $xl_flag = "XL:$gt_sig$is_xl_co:$xls{'case'}:$xls{'control'}:$xls{'unknown'}";
+    $xls_flag = "XL:$gt_sig$is_xl_co:$xls{'case'}:$xls{'control'}:$xls{'unknown'}";
 
 
     return($ad_flag, $ar_flag, $xls_flag);

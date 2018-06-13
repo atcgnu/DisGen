@@ -11,9 +11,9 @@ sub get_predict{
 	if(-f $db_file){
 		$dbh = DBI->connect("dbi:SQLite:dbname=$db_file","","");
 		if ($ref_version =~/hg19/i or $ref_version =~/grch37/i){
-			$db_ary_ref=$dbh->selectall_arrayref("SELECT $dbs FROM dbNSFP WHERE key37 = '$chr:$pos:$ref>$allele'");
+			$db_ary_ref=$dbh->selectall_arrayref("SELECT $dbs FROM db WHERE key37 = '$chr:$pos:$ref>$allele'");
 		}elsif ($ref_version =~/hg38/i or $ref_version =~/grch38/i){
-			$db_ary_ref=$dbh->selectall_arrayref("SELECT $dbs FROM dbNSFP WHERE key38 = '$chr:$pos:$ref>$allele'");
+			$db_ary_ref=$dbh->selectall_arrayref("SELECT $dbs FROM db WHERE key38 = '$chr:$pos:$ref>$allele'");
 		}else{
 			die "ERROR:The $db_file only support hg19/grch37 and hg38/grch38\n";
 		}
@@ -41,9 +41,9 @@ sub get_all_predict{
 	if(-f $db_file){
 		$dbh = DBI->connect("dbi:SQLite:dbname=$db_file","","");
                 if ($ref_version =~/hg19/i or $ref_version =~/grch37/i){
-                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM dbNSFP WHERE key37 = '$chr:$pos:$ref>$allele'");
+                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM db WHERE key37 = '$chr:$pos:$ref>$allele'");
                 }elsif ($ref_version =~/hg38/i or $ref_version =~/grch38/i){
-                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM dbNSFP WHERE key38 = '$chr:$pos:$ref>$allele'");
+                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM db WHERE key38 = '$chr:$pos:$ref>$allele'");
                 }else{
                         die "ERROR:The $db_file only support hg19/grch37 and hg38/grch38\n";
                 }
@@ -68,9 +68,9 @@ sub get_all_predict_pos{
         if(-f $db_file){
                 $dbh = DBI->connect("dbi:SQLite:dbname=$db_file","","");
                 if ($ref_version =~/hg19/i or $ref_version =~/grch37/i){
-                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM dbNSFP WHERE key37 LIKE '$chr:$pos:%'");
+                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM db WHERE key37 LIKE '$chr:$pos:%'");
                 }elsif ($ref_version =~/hg38/i or $ref_version =~/grch38/i){
-                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM dbNSFP WHERE key38 LIKE '$chr:$pos:%'");
+                        $db_ary_ref=$dbh->selectall_arrayref("SELECT * FROM db WHERE key38 LIKE '$chr:$pos:%'");
                 }else{
                         die "ERROR:The $db_file only support hg19/grch37 and hg38/grch38\n";
                 }

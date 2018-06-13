@@ -35,6 +35,7 @@ our %_wftool_ = (
     vcf_concat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/software/vcftools_0.1.12b/bin/vcf-concat",
     speedseq => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/speedseq/bin/speedseq",
     SRinversion => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/sr_inversion_merge/SRinversion.pl",
+    SRinversion_concat => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/sr_inversion_merge/SRinversion_concat.pl",
     ExonDel => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/ExonDel/ExonDel.pl",
     UPDio => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/UPDio/version_1.0/UPDio.pl",
 
@@ -57,7 +58,7 @@ our %_wfdata_ = (
 #    ComputationalData_VL => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
     dbNSFP => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
 #    ComputationalData_GL => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/dbNSFP/InChr',
-    OtherDB =>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/clinvar_hgmd',
+    otherdb =>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/clinvar_hgmd',
     gwas_catalog=>'/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Pipeline/2018v1/data/gwas',
 	vep77cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/cache',
 	vep91cache => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/software/VEP/v91/ensembl-vep/cache',
