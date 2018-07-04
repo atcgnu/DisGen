@@ -44,6 +44,7 @@ our %_wftool_ = (
 our %_wfdata_ = (
     dbpp => '/hwfssz1/ST_MCHRI/DISEASE/USER/heyuan/Project/Freq/sql',
     dbcase => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdclinic/v3.0.0/data/dbcase',
+	dbhom => '/hwfssz1/ST_MCHRI/DISEASE/DEV/pub/gnomAD/tmp',
 #    bwa7ucsc19ref => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v2.0.0/data/bundle_2.8_hg19/bwa-0.7.10-r789/ucsc.hg19.fasta",
     bwa7hg19ref => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/data/gatk_bundle/hg19/0.7.17-r1188/reference.fasta",
     bwa7hg38ref => "/hwfssz1/ST_MCHRI/DISEASE/DEV/pipeline/rdresearch/v3.0.0/data/gatk_bundle/hg38/0.7.17-r1188/reference.fasta",

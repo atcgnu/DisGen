@@ -2,6 +2,7 @@
 #
 package DisGen::general::VCF2;
 use DisGen::general::MakeOpen;
+use DisGen::general::GenotypeInfo;
 use DisGen::general::GenotypeCount;
 use DisGen::general::Cosegregation;
 use DisGen::general::OtherDatabase;
@@ -94,6 +95,8 @@ sub PopulationDataTSV{
 	open OTAF, "> $out_dir/$out_file.PopulationData.AF.tsv" or die $!;
 	open OTGC, "> $out_dir/PopulationData.GC.header.tsv" or die $!;
 	open OTGC, "> $out_dir/$out_file.PopulationData.GC.tsv" or die $!;
+	open OTGI, "> $out_dir/PopulationData.GI.header.tsv" or die $!;
+	open OTGI, "> $out_dir/$out_file.PopulationData.GI.tsv" or die $!;
 	while(<VCF>){
 		chomp;
 		next if /^#/;
@@ -112,6 +115,11 @@ sub PopulationDataTSV{
         	my @dbpp_query_results = @$ref_dbpp_query_results;
 	        $pd_info = join "\t", @dbpp_query_results;	
 			print OTAF "$pd_info\n";
+
+			my ($ref_dbhom_query_results) = DisGen::general::GenotypeInfo::get_hom_all($chr, $pos, $ref, $allele);
+        	my @dbhom_query_results = @$ref_dbhom_query_results;
+	        $gi_info = join "\t", @dbhom_query_results;	
+			print OTGI "$gi_info\n" unless $gi_info =~ /^\./ or $gi_info =~ /^$/;
 		}
 	}
 	close VCF;
@@ -142,7 +150,7 @@ sub ComputationalDataTSV{
 }
 
 sub FunctionalDataTSV{}
-sub SegregationDataTSV{}
+
 sub OtherDatabaseTSV{
     my ($vcf, $sig_chr, $out_dir, $out_file, $ref_version) = @_;
 	$ref_version ||= 'hg19';

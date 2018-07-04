@@ -160,7 +160,9 @@ sub StageSample {
 	    my ($bam2gvcf_cmd) = DisGen::pipeline::BAM2::gvcf('gatk4', $ref_version, "$dest_alignment/$out_file_prefix.dedup.recal.bam", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2GVCF", $script, $bam2gvcf_cmd, 3, *OT, "$tmp_dir", "$dest_alignment");
 
-	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$dest_alignment/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
+		my $input_gvcf_list = "-V $dest_alignment/$out_file_prefix.g.vcf";
+#	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$dest_alignment/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
+	    my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "$input_gvcf_list", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "GVCF2VCF", $script, $gvcf2vcf_cmd, 3, *OT, "$tmp_dir", "$dest_alignment");
 
       	my ($vcf2vep_cmd) = DisGen::pipeline::VCF2::VEPvcf('vep91', $ref_version, "$dest_alignment/$out_file_prefix.gatkHC.vcf", "$out_file_prefix", "$tmp_dir", $region); 
@@ -243,11 +245,15 @@ if (-e "$DisGen::general::Resource::_wfdata_{CCDS}/chr$chr"){
 	    my ($vcf2union_vcf_cmd) = DisGen::pipeline::VCF2::unionVCF('union_vcf', "gatkHC:$dest_call/chr$chr.gatkHC.vcf platypus:$dest_call/chr$chr.platypus.vcf speedseq:$dest_call/chr$chr.speedseq.vcf.gz", "$out_file_prefix.union", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/chr$chr.bed"); 
 		DisGen::pipeline::Monitor::robust2execute($log_dir , "VCF2unionVCF", $script, $vcf2union_vcf_cmd, 3, *OT, "$tmp_dir", "$dest_call");
 
+      	my ($vcf2vep_cmd) = DisGen::pipeline::VCF2::vepVCF('vep91', $ref_version, "$dest_call/chr$chr.gatkHC.vcf", "$out_file_prefix.gatkHC", "$tmp_dir"); 
+		DisGen::pipeline::Monitor::robust2execute($log_dir , "VCF2VEP", $script, $vcf2vep_cmd, 3, *OT, "$tmp_dir", "$dest_call");
+
         $chr_gvcf_vcf .= " $dest_call/chr$chr.g.vcf";
         $chr_gatk_vcf .= " $dest_call/chr$chr.gatkHC.vcf";
         $chr_platypus_vcf .= " $dest_call/chr$chr.platypus.vcf";
         $chr_speedseq_vcf .= " $dest_call/chr$chr.speedseq.vcf.gz";
         $chr_union_vcf .= " $dest_call/chr$chr.union.vcf";
+        $chr_vep_gatk_vcf .= " $dest_call/chr$chr.gatkHC.VEP.vcf";
 
 		DisGen::pipeline::Monitor::EchoSWRD($log_dir , "VCF2unionVCF", $script, *OT);
         close OT;
@@ -262,6 +268,9 @@ if (-e "$DisGen::general::Resource::_wfdata_{CCDS}/chr$chr"){
     my ($bam2sample_stat_cmd) = DisGen::pipeline::BAM2::stat_by_sample('SoapAllStat',  "$tmp_dir", "$out_dir/$sample_id/$version/0.temp/2.sample/result/Stat/StatByChr", $sample_id, $cohort{$sample_id}->{gender});
 	DisGen::pipeline::Monitor::robust2execute($log_dir , "BAM2sampleSTAT", $script_merge, $bam2sample_stat_cmd, 3, *SOT, "$tmp_dir", "$out_dir/$sample_id/$version/0.temp/2.sample/result//Stat");
 
+    DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChr_gatkHC_VEP_vcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_vep_gatk_vcf > $tmp_dir/sample.gatkHC.VEP.vcf", 3, *SOT, "$tmp_dir", "$des_dir");
+    DisGen::pipeline::Monitor::EchoSWRD($log_dir , "mergeChr_gatkHC_VEP_vcf", $script_merge, *SOT);
+
     DisGen::pipeline::Monitor::robust2execute($log_dir , "mergeChrvcf", $script_merge, "$DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gvcf_vcf > $tmp_dir/sample.gvcf.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_gatk_vcf > $tmp_dir/sample.gatkHC.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_platypus_vcf  > $tmp_dir/sample.platypus.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_speedseq_vcf > $tmp_dir/sample.speedseq.vcf && $DisGen::general::Resource::_wftool_{perl} $DisGen::general::Resource::_wftool_{vcf_concat} $chr_union_vcf > $tmp_dir/sample.union.vcf", 3, *SOT, "$tmp_dir", "$des_dir");
     DisGen::pipeline::Monitor::EchoSWRD($log_dir , "mergeChrvcf", $script_merge, *SOT);
 
@@ -270,7 +279,77 @@ if (-e "$DisGen::general::Resource::_wfdata_{CCDS}/chr$chr"){
 
 }
 
-sub StageFamily{}
+sub StageFamily{
+    my ($out_dir, $version, $sample_id, $region, $ref_lanes, $ref_cohort) = @_;
+    my %lanes = %$ref_lanes;
+    my %cohort = %$ref_cohort;
+
+        my %familys;
+        my ($family_id, $sample_num, $gvcf_num, $gvcf_vcf_list, $family_vcf, %trios);
+
+    my ($ref_version, @jobIDs);
+
+    $ref_version = 'hg19' if $version =~ /hg19|grch37/i;
+    $ref_version = 'hg38' if $version =~ /hg38|grch38/i;
+    my $bed_dir = "bed_dir_$ref_version";
+
+####
+	foreach my $sid (keys %cohort){
+        $familys{$sid} = 'Y' if $cohort{$sid}->{family_id} eq $cohort{$sample_id}->{family_id};
+    }
+####
+
+foreach my $sid (keys %familys){
+	$family_id = $cohort{$sid}->{family_id};
+	my $sample_name = $cohort{$sid}->{sample_name};
+	my $lane_info = $cohort{$sid}->{lane_info};
+	my $region = $cohort{$sid}->{region};
+	my $sequence_platform = $cohort{$sid}->{sequence_platform};
+	my $grch = $cohort{$sid}->{grch};
+
+	my $version = "${sequence_platform}-${region}-${grch}"; # illumina-Agilent_SureSelect_Human_All_Exon_Kits_V5-GRCh37 | BGISEQ500-WGS-GRCh38
+
+    $interval="$bed_dir/${region}_200bp/${region}_200bp.bed";
+    $interval_tr="$bed_dir/${region}_0bp/${region}_0bp.bed";
+    $sample_num ++;
+    $gvcf_num ++ if -e "$out_dir/$sid/$version/0.temp/2.sample/result/sample.gvcf.vcf";
+    $gvcf_vcf_list .= "-V $out_dir/$sid/$version/0.temp/2.sample/result/sample.gvcf.vcf ";
+    $family_vcf = "$out_dir/$sid/$version/0.temp/2.sample/result/sample.gatkHC.vcf";
+}
+
+    my $script = "$out_dir/$family_id/0.sh.e.o/stage_family.sh";
+    my $log_dir = "$out_dir/$family_id/0.sh.e.o/log";
+    my $tmp_dir = "$out_dir/$family_id/0.sh.e.o/tmp";
+
+    my $dest_variant_dir = "$out_dir/$family_id/2.variant";
+    my $dest_annotation_dir = "$out_dir/$family_id/3.annotation";
+    my $dest_candidate_dir = "$out_dir/$family_id/4.candidate";
+
+    `mkdir -p $log_dir` unless -e "mkdir -p $log_dir";
+    `mkdir -p $tmp_dir` unless -e "mkdir -p $tmp_dir";
+
+    my $out_file_prefix = "family";
+
+    open OT, ">$script" or die $!;
+
+    my ($setenv_cmd) = DisGen::pipeline::SETENV::DEFAULT('default');
+    print OT "$setenv_cmd\n\n";
+
+	if ($sample_num > 1){
+#		multi_sample_gvcf
+
+		my ($gvcf2mgvcf_cmd) = DisGen::pipeline::GVCF2::multi_sample_gvcf('gatk4', $ref_version, "$gvcf_vcf_list", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed");
+        DisGen::pipeline::Monitor::robust2execute($log_dir , "GVCF2mgVCF", $script, $gvcf2mgvcf_cmd, 3, *OT, "$tmp_dir", "$dest_variant_dir");
+#
+		my ($gvcf2vcf_cmd) = DisGen::pipeline::GVCF2::vcf('gatk4', $ref_version, "-V $dest_variant_dir/$out_file_prefix.g.vcf", "$out_file_prefix", "$tmp_dir", "$DisGen::general::Resource::_wfdata_{$bed_dir}/${region}_0bp/${region}_0bp.bed");
+#
+        DisGen::pipeline::Monitor::robust2execute($log_dir , "GVCF2VCF", $script, $gvcf2vcf_cmd, 3, *OT, "$tmp_dir", "$dest_variant_dir");
+	}elsif($sample_num == 1){}
+
+    push @jobIDs, "$script:4G:1CPU";
+    return (\@jobIDs);
+}
+
 sub StageTrio{}
 
 1;
